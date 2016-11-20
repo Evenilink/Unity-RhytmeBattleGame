@@ -67,7 +67,8 @@ public class PlayerController : MonoBehaviour {
                     else
                         updateStancePosition(false, numAdvanceStance);
                 }
-                else if (Input.GetButtonDown("Transport Right")) {
+
+                if (Input.GetButtonDown("Transport Right")) {
                     int numAdvanceStance;
                     if (enemy.getCurrStance() == (currStance + 1) && enemy.getIsUp() == isUp)
                         numAdvanceStance = 2;
@@ -79,35 +80,44 @@ public class PlayerController : MonoBehaviour {
                     else
                         updateStancePosition(true, numAdvanceStance);
                 }
-                else if (Input.GetButtonDown("Transport Up") && !isUp) {
-                    if (enemy.getCurrStance() == currStance && enemy.getIsUp() != isUp)
-                        Debug.Log("Attacking from below!");
-                    else {
+
+                if (Input.GetButtonDown("Transport Up") && !isUp) {
+                    if (enemy.getCurrStance() != currStance) {
                         isUp = true;
                         verticalFlip();
                     }
                 }
-                else if (Input.GetButtonDown("Transport Down") && isUp) {
-                    if (enemy.getCurrStance() == currStance && enemy.getIsUp() != isUp)
-                        Debug.Log("Attacking from above!");
-                    else {
+
+                if (Input.GetButtonDown("Transport Down") && isUp) {
+                    if (enemy.getCurrStance() != currStance) {
                         isUp = false;
                         verticalFlip();
                     }
                 }
-                else if (Input.GetButtonDown("Attack")) {
-                    int distanceToEnemy = currStance - enemy.getCurrStance();
-                    if (Mathf.Abs(distanceToEnemy) == 1 && isUp == enemy.getIsUp()) {
-                        if (distanceToEnemy > 0)
-                            enemy.receivedHorizontalAttack(true);
-                        else
-                            enemy.receivedHorizontalAttack(false);
-                    } else if(distanceToEnemy == 0 && isUp != enemy.getIsUp())
-                        enemy.receivedVerticalAttack();
-                    else
-                        Debug.Log("The player is not attacking anybody!");
+
+                if (Input.GetButtonDown("Left Attack")) {
+                    if (enemy.getCurrStance()  == currStance - 1 && enemy.getIsUp() == isUp) {
+                        enemy.receivedHorizontalAttack(true);
+                        Debug.Log("Player attacking from the right!");
+                    }
                 }
-                else if (Input.GetKeyDown(KeyCode.Q)) {
+
+                if (Input.GetButtonDown("Right Attack")) {
+                    if (enemy.getCurrStance() == currStance + 1 && enemy.getIsUp() == isUp)
+                        enemy.receivedHorizontalAttack(false);
+                }
+
+                if (Input.GetButtonDown("Up Attack")) {
+                    if (enemy.getCurrStance() == currStance && enemy.getIsUp() != isUp && isUp == false)
+                        enemy.receivedVerticalAttack(true);
+                }
+
+                if (Input.GetButtonDown("Down Attack")) {
+                    if (enemy.getCurrStance() == currStance && enemy.getIsUp() == isUp && isUp == true)
+                        enemy.receivedVerticalAttack(false);
+                }
+
+                if (Input.GetKeyDown(KeyCode.Q)) {
                     gameInstance.debug();
                 }
                 break;
@@ -139,7 +149,9 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    /********************************************/
     /********** BATTLE_STATE FUNCTIONS **********/
+    /********************************************/
 
     /**
      * Updates the current stance the player is on

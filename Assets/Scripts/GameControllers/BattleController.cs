@@ -16,7 +16,6 @@ public class BattleController : MonoBehaviour {
     public void generateBattleStances() {
         GameInstance gameInstance = GameObject.Find("GameInstance").GetComponent<GameInstance>();
         List<Vector2> stancePositions = new List<Vector2>();
-        GameObject obj;
 
         if (amountBattleStances < 4) {
             Debug.LogError("Variable amoutBattleStances can't be less than 4! Setting default value of 4.");
@@ -25,7 +24,7 @@ public class BattleController : MonoBehaviour {
 
         //If it's an odd number, add one to the center of the battle zone
         if (amountBattleStances % 2 != 0) {
-            obj = (GameObject)Instantiate(battleStance, transform.position, transform.rotation);
+            Instantiate(battleStance, transform.position, transform.rotation);
             stancePositions.Add(new Vector2(transform.position.x, transform.position.y));
             amountBattleStances--;
         }
@@ -41,7 +40,7 @@ public class BattleController : MonoBehaviour {
                 aux++;
             }
 
-            obj = (GameObject)Instantiate(battleStance, battleStancePosition, transform.rotation);
+            Instantiate(battleStance, battleStancePosition, transform.rotation);
             stancePositions.Add(battleStancePosition);
         }
 
@@ -49,9 +48,7 @@ public class BattleController : MonoBehaviour {
 
         //Setting the GameInstance variables
         gameInstance.stancePositions = stancePositions;
-
-        GameObject enemyGO = Instantiate(enemy, new Vector3(stancePositions[0].x, 0.8f, 0), transform.rotation) as GameObject;
-        //enemyGO.GetComponent<Enemy>().setPositioningVariables(stancePositions.Count - 1, true);
+        Instantiate(enemy, new Vector3(0, 0.8f, 0), transform.rotation);
     }
 
     /**

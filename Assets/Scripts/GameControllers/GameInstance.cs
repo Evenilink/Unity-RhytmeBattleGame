@@ -11,4 +11,12 @@ public class GameInstance : MonoBehaviour {
         for (int i = 0; i < stancePositions.Count; i++)
             Debug.Log("Stance position " + i + " = " + stancePositions[i]);
     }
+
+    /*public List<Vector2> getStancePositions() {
+        return stancePositions;
+    }
+
+    public int getEnemiesDefeated() {
+        return enemiesDefeated;
+    }*/
 }

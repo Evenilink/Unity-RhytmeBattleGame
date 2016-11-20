@@ -3,23 +3,31 @@ using System.Collections;
 
 public class Enemy : MonoBehaviour {
 
-    [System.NonSerialized] public GameInstance gameInstance;
-    [System.NonSerialized] public PlayerController playerController;
-    [System.NonSerialized] public int currStance;
+    [System.NonSerialized]
+    public GameInstance gameInstance;
+    [System.NonSerialized]
+    public PlayerController playerController;
+    [System.NonSerialized]
+    public int currStance;
 
     private IEnemyState currentState;
     private float decisionTime = 1;
     private bool isUp = true;
+    private int health = 2;
 
-    void Start () {
+    void Start() {
         gameInstance = GameObject.Find("GameInstance").GetComponent<GameInstance>();
         playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         changeState(new AnaliseState());
-	}
-	
-	void Update () {
+
+        currStance = 2;
+        isUp = true;
+        moveEnemy();
+    }
+
+    void Update() {
         //currentState.execute();
-	}
+    }
 
     public float getDecisionTime() {
         return decisionTime;
@@ -34,6 +42,13 @@ public class Enemy : MonoBehaviour {
     }
 
     /**
+     * Moves the enemy to the new 'x' position.
+     * */
+    private void moveEnemy() {
+        transform.position = new Vector3(gameInstance.stancePositions[currStance].x, transform.position.y, transform.position.z);
+    }
+
+    /**
      * Rotates around the floor where the stances are, creating the illusion the enemy is dropping or rising
      * */
     private void verticalFlip() {
@@ -45,21 +60,6 @@ public class Enemy : MonoBehaviour {
             rotateAround = new Vector3(transform.position.x, transform.position.y - 0.8f, transform.position.z);
 
         transform.RotateAround(rotateAround, new Vector3(0, 0, 1), 180);
-    }
-
-    /**
-     * Used by the BattleController.
-     * Gives a more random approach to the initial condicions.
-     * */
-    public void setPositioningVariables(int currStance, bool isUp) {
-        this.currStance = currStance;
-        this.isUp = isUp;
-
-        //ERROR
-        //transform.position = new Vector3(gameInstance.stancePositions[this.currStance].x, transform.position.y, transform.position.z);
-
-        if(!this.isUp)
-            verticalFlip();
     }
 
     /**
@@ -83,20 +83,35 @@ public class Enemy : MonoBehaviour {
         else
             currStance++;
 
-        transform.position = new Vector3(gameInstance.stancePositions[currStance].x, transform.position.y, transform.position.z);
+        health--;
+
+        if (health <= 0 || currStance < 0 || currStance >= gameInstance.stancePositions.Count) {
+            Debug.Log("The enemy has died!");
+            Destroy(gameObject);
+            return;
+        }
+
+        moveEnemy();
     }
 
     /**
      * Called by the player.
      * Handles what happens when player attacks the enemy from above or below.
      * */
-    public void receivedVerticalAttack() {
+    public void receivedVerticalAttack(bool fromBelow) {
         float offset;
 
         if (isUp)
-            offset = 0.5f;
+            offset = 0.8f;
         else
-            offset = -0.5f;
+            offset = -0.8f;
+
+        health--;
+        if (health <= 0) {
+            Debug.Log("The enemy has died!");
+            Destroy(gameObject);
+            return;
+        }
 
         transform.RotateAround(new Vector3(transform.position.x, transform.position.y + offset, transform.position.z), new Vector3(0, 0, 1), 90);
     }
