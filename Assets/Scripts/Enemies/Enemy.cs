@@ -22,11 +22,11 @@ public class Enemy : MonoBehaviour {
 
         currStance = 2;
         isUp = true;
-        moveEnemy();
+        updateEnemyPosition();
     }
 
     void Update() {
-        //currentState.execute();
+        currentState.execute();
     }
 
     public float getDecisionTime() {
@@ -44,15 +44,16 @@ public class Enemy : MonoBehaviour {
     /**
      * Moves the enemy to the new 'x' position.
      * */
-    private void moveEnemy() {
+    public void updateEnemyPosition() {
         transform.position = new Vector3(gameInstance.stancePositions[currStance].x, transform.position.y, transform.position.z);
     }
 
     /**
      * Rotates around the floor where the stances are, creating the illusion the enemy is dropping or rising
      * */
-    private void verticalFlip() {
+    public void verticalFlip() {
         Vector3 rotateAround;
+        isUp = !isUp;
 
         if (isUp)
             rotateAround = new Vector3(transform.position.x, transform.position.y + 0.8f, transform.position.z);
@@ -91,7 +92,7 @@ public class Enemy : MonoBehaviour {
             return;
         }
 
-        moveEnemy();
+        updateEnemyPosition();
     }
 
     /**
@@ -99,20 +100,11 @@ public class Enemy : MonoBehaviour {
      * Handles what happens when player attacks the enemy from above or below.
      * */
     public void receivedVerticalAttack(bool fromBelow) {
-        float offset;
-
-        if (isUp)
-            offset = 0.8f;
-        else
-            offset = -0.8f;
-
         health--;
         if (health <= 0) {
             Debug.Log("The enemy has died!");
             Destroy(gameObject);
             return;
         }
-
-        transform.RotateAround(new Vector3(transform.position.x, transform.position.y + offset, transform.position.z), new Vector3(0, 0, 1), 90);
     }
 }

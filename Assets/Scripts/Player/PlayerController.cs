@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour {
     //BATTLE_STATE variables
     private GameInstance gameInstance;
     private Enemy enemy;
+    private int health = 1;
     private int currStance;
     private bool isUp;
     private int startingStance = 3;
@@ -30,6 +31,8 @@ public class PlayerController : MonoBehaviour {
     private Rigidbody2D rigidbody2D;
 
     void Start() {
+        Random.seed = System.Environment.TickCount;
+
         rigidbody2D = GetComponent<Rigidbody2D>();
         gameInstance = GameObject.Find("GameInstance").GetComponent<GameInstance>();
     }
@@ -82,17 +85,13 @@ public class PlayerController : MonoBehaviour {
                 }
 
                 if (Input.GetButtonDown("Transport Up") && !isUp) {
-                    if (enemy.getCurrStance() != currStance) {
-                        isUp = true;
+                    if (enemy.getCurrStance() != currStance)
                         verticalFlip();
-                    }
                 }
 
                 if (Input.GetButtonDown("Transport Down") && isUp) {
-                    if (enemy.getCurrStance() != currStance) {
-                        isUp = false;
+                    if (enemy.getCurrStance() != currStance)
                         verticalFlip();
-                    }
                 }
 
                 if (Input.GetButtonDown("Left Attack")) {
@@ -153,15 +152,18 @@ public class PlayerController : MonoBehaviour {
     /********** BATTLE_STATE FUNCTIONS **********/
     /********************************************/
 
-    /**
-     * Updates the current stance the player is on
-     * */
-    private void updateStancePosition(bool goingRight, int numAdvance) {
-        if (goingRight)
-            currStance += numAdvance;
-        else
-            currStance -= numAdvance;
+    public int getCurrStance() {
+        return currStance;
+    }
 
+    public bool getIsUp() {
+        return isUp;
+    }
+
+    /**
+     * Updates the player transform
+     * */
+    private void updatePlayerPosition() {
         transform.position = new Vector3(gameInstance.stancePositions[currStance].x, transform.position.y, transform.position.z);
     }
 
@@ -170,6 +172,7 @@ public class PlayerController : MonoBehaviour {
      * */
     private void verticalFlip() {
         Vector3 rotateAround;
+        isUp = !isUp;
 
         if (isUp)
             rotateAround = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
@@ -179,11 +182,42 @@ public class PlayerController : MonoBehaviour {
         transform.RotateAround(rotateAround, new Vector3(0, 0, 1), 180);
     }
 
-    public int getCurrStance() {
-        return currStance;
+    /**
+     * Updates the current stance the player is on
+     * */
+    private void updateStancePosition(bool goingRight, int numAdvance) {
+        if (goingRight)
+            currStance += numAdvance;
+        else
+            currStance -= numAdvance;
+
+        updatePlayerPosition();
     }
 
-    public bool getIsUp() {
-        return isUp;
+    public void receivedHorizontalAttack(bool fromRight) {
+        if (fromRight)
+            currStance--;
+        else
+            currStance++;
+
+        health--;
+
+        if(health <= 0 || currStance < 0 || currStance >= gameInstance.stancePositions.Count) {
+            Debug.Log("The player has died!");
+            Destroy(gameObject);
+            return;
+        }
+
+        updatePlayerPosition();
+    }
+
+    public void receivedVerticalAttack(bool fromBelow) {
+        health--;
+
+        if(health <= 0) {
+            Debug.Log("The player has died!");
+            Destroy(gameObject);
+            return;
+        }
     }
 }

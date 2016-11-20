@@ -6,6 +6,18 @@ public class AttackState : IEnemyState {
 
     private Enemy enemy;
     private float currTime;
+    private int attackFrom;
+
+    /*
+     * 1 --> Left Attack
+     * 2 --> Right Attack
+     * 3 --> Up Attack
+     * 4 --> Down Attack
+     * */
+
+    public AttackState(int attackFrom) {
+        this.attackFrom = attackFrom;
+    }
 
     public void enter(Enemy enemy) {
         this.enemy = enemy;
@@ -13,11 +25,15 @@ public class AttackState : IEnemyState {
     }
 
     public void execute() {
-        if(enemy.playerController.getIsUp() == enemy.getIsUp()) {
-            Debug.Log("I'm attacking and the isUp is the same!");
-        } else {
-            Debug.Log("I'm attacking but on a different isUp!");
+        switch(attackFrom) {
+            case 1: enemy.playerController.receivedHorizontalAttack(true); break;
+            case 2: enemy.playerController.receivedHorizontalAttack(false); break;
+            case 3: enemy.playerController.receivedVerticalAttack(true); break;
+            case 4: enemy.playerController.receivedVerticalAttack(false); break;
+            default: break;
         }
+
+        enemy.changeState(new AnaliseState());
     }
 
     public void exit() {
