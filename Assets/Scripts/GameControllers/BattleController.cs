@@ -16,8 +16,6 @@ public class BattleController : MonoBehaviour {
     public void generateBattleStances() {
         GameInstance gameInstance = GameObject.Find("GameInstance").GetComponent<GameInstance>();
         List<Vector2> stancePositions = new List<Vector2>();
-        List<bool> stanceUpOccupations = new List<bool>();
-        List<bool> stanceDownOccupations = new List<bool>();
         GameObject obj;
 
         if (amountBattleStances < 4) {
@@ -29,8 +27,6 @@ public class BattleController : MonoBehaviour {
         if (amountBattleStances % 2 != 0) {
             obj = (GameObject)Instantiate(battleStance, transform.position, transform.rotation);
             stancePositions.Add(new Vector2(transform.position.x, transform.position.y));
-            stanceUpOccupations.Add(false);
-            stanceDownOccupations.Add(false);
             amountBattleStances--;
         }
 
@@ -47,19 +43,15 @@ public class BattleController : MonoBehaviour {
 
             obj = (GameObject)Instantiate(battleStance, battleStancePosition, transform.rotation);
             stancePositions.Add(battleStancePosition);
-            stanceUpOccupations.Add(false);
-            stanceDownOccupations.Add(false);
         }
 
         stancePositions.Sort(sortByX);
 
         //Setting the GameInstance variables
         gameInstance.stancePositions = stancePositions;
-        gameInstance.stanceUpOccupations = stanceUpOccupations;
-        gameInstance.stanceDownOccupations = stanceDownOccupations;
 
-        GameObject enemyGO = Instantiate(enemy, new Vector3(stancePositions[stancePositions.Count - 2].x, 0.8f, 0), transform.rotation) as GameObject;
-        enemyGO.GetComponent<Enemy>().setPositioningVariables(stancePositions.Count - 2, true);
+        GameObject enemyGO = Instantiate(enemy, new Vector3(stancePositions[0].x, 0.8f, 0), transform.rotation) as GameObject;
+        //enemyGO.GetComponent<Enemy>().setPositioningVariables(stancePositions.Count - 1, true);
     }
 
     /**

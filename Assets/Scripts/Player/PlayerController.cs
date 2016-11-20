@@ -24,6 +24,8 @@ public class PlayerController : MonoBehaviour {
     private Enemy enemy;
     private int currStance;
     private bool isUp;
+    private int startingStance = 3;
+    private bool startingIsUp = true;
 
     private Rigidbody2D rigidbody2D;
 
@@ -54,37 +56,44 @@ public class PlayerController : MonoBehaviour {
 
             case State.BATTLE_STATE:
                 if (Input.GetButtonDown("Transport Left")) {
-                    if (currStance == 0)
+                    int numAdvanceStance;
+                    if (enemy.getCurrStance() == (currStance - 1) && enemy.getIsUp() == isUp)
+                        numAdvanceStance = 2;
+                    else
+                        numAdvanceStance = 1;
+
+                    if (currStance - numAdvanceStance < 0)
                         Debug.Log("You want to be dead?");
-                    else {
-                        updateStancePosition(false);
-                        if (isUp)
-                            updateStanceUp(currStance - 1, false, currStance, true);
-                        else
-                            updateStanceDown(currStance + 1, false, currStance, true);
-                    }
+                    else
+                        updateStancePosition(false, numAdvanceStance);
                 }
                 else if (Input.GetButtonDown("Transport Right")) {
-                    Debug.Log("Tapping right");
-                    if (currStance == gameInstance.stancePositions.Count - 1)
+                    int numAdvanceStance;
+                    if (enemy.getCurrStance() == (currStance + 1) && enemy.getIsUp() == isUp)
+                        numAdvanceStance = 2;
+                    else
+                        numAdvanceStance = 1;
+
+                    if (currStance + numAdvanceStance >= gameInstance.stancePositions.Count)
                         Debug.Log("You want to be dead?");
-                    else {
-                        updateStancePosition(true);
-                        if (isUp)
-                            updateStanceUp(currStance - 1, false, currStance, true);
-                        else
-                            updateStanceDown(currStance - 1, false, currStance, true);
-                    }
+                    else
+                        updateStancePosition(true, numAdvanceStance);
                 }
                 else if (Input.GetButtonDown("Transport Up") && !isUp) {
-                    isUp = true;
-                    changeStance(true, false);
-                    verticalFlip();
+                    if (enemy.getCurrStance() == currStance && enemy.getIsUp() != isUp)
+                        Debug.Log("Attacking from below!");
+                    else {
+                        isUp = true;
+                        verticalFlip();
+                    }
                 }
                 else if (Input.GetButtonDown("Transport Down") && isUp) {
-                    isUp = false;
-                    changeStance(false, true);
-                    verticalFlip();
+                    if (enemy.getCurrStance() == currStance && enemy.getIsUp() != isUp)
+                        Debug.Log("Attacking from above!");
+                    else {
+                        isUp = false;
+                        verticalFlip();
+                    }
                 }
                 else if (Input.GetButtonDown("Attack")) {
                     int distanceToEnemy = currStance - enemy.getCurrStance();
@@ -117,9 +126,11 @@ public class PlayerController : MonoBehaviour {
             other.transform.parent.gameObject.GetComponent<BattleController>().generateBattleStances();
             enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy>();
 
-            currStance = 0;
-            gameInstance.stanceUpOccupations[0] = true;
-            isUp = true;
+            currStance = startingStance;
+            isUp = startingIsUp;
+
+            if (!isUp)
+                verticalFlip();
 
             transform.position = new Vector3(gameInstance.stancePositions[currStance].x, transform.position.y, transform.position.z);
             rigidbody2D.gravityScale = 0;
@@ -133,11 +144,11 @@ public class PlayerController : MonoBehaviour {
     /**
      * Updates the current stance the player is on
      * */
-    private void updateStancePosition(bool goingRight) {
+    private void updateStancePosition(bool goingRight, int numAdvance) {
         if (goingRight)
-            currStance++;
+            currStance += numAdvance;
         else
-            currStance--;
+            currStance -= numAdvance;
 
         transform.position = new Vector3(gameInstance.stancePositions[currStance].x, transform.position.y, transform.position.z);
     }
@@ -154,32 +165,6 @@ public class PlayerController : MonoBehaviour {
             rotateAround = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
 
         transform.RotateAround(rotateAround, new Vector3(0, 0, 1), 180);
-    }
-
-    /**
-     * Sets the up stance 'indexToChange' to 'valueToChange' and 'indexToAdd' to 'valueToAdd'
-     * 'indexToChange' is the index before the update, and 'indexToAdd' is the index after the update
-     * */
-    private void updateStanceUp(int indexToChange, bool valueToChange, int indexToAdd, bool valueToAdd) {
-        gameInstance.setStanceUpOccupations(indexToChange, valueToChange);
-        gameInstance.setStanceUpOccupations(indexToAdd, valueToAdd);
-    }
-
-    /**
-     * Sets the down stance 'indexToChange' to 'valueToChange' and 'indexToAdd' to 'valueToAdd'
-     * 'indexToChange' is the index before the update, and 'indexToAdd' is the index after the update
-     * */
-    private void updateStanceDown(int indexToChange, bool valueToChange, int indexToAdd, bool valueToAdd) {
-        gameInstance.setStanceDownOccupations(indexToChange, valueToChange);
-        gameInstance.setStanceDownOccupations(indexToAdd, valueToAdd);
-    }
-
-    /**
-     * Exchanges the up and down value of the same stance
-     * */
-    private void changeStance(bool upStance, bool downStance) {
-        gameInstance.setStanceUpOccupations(currStance, upStance);
-        gameInstance.setStanceDownOccupations(currStance, downStance);
     }
 
     public int getCurrStance() {

@@ -13,7 +13,11 @@ public class AttackState : IEnemyState {
     }
 
     public void execute() {
-        Debug.Log("I'm attacking!");
+        if(enemy.playerController.getIsUp() == enemy.getIsUp()) {
+            Debug.Log("I'm attacking and the isUp is the same!");
+        } else {
+            Debug.Log("I'm attacking but on a different isUp!");
+        }
     }
 
     public void exit() {

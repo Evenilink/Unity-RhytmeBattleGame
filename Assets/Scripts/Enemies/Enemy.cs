@@ -3,12 +3,13 @@ using System.Collections;
 
 public class Enemy : MonoBehaviour {
 
-    private IEnemyState currentState;
     [System.NonSerialized] public GameInstance gameInstance;
     [System.NonSerialized] public PlayerController playerController;
     [System.NonSerialized] public int currStance;
+
+    private IEnemyState currentState;
     private float decisionTime = 1;
-    private bool isUp;
+    private bool isUp = true;
 
     void Start () {
         gameInstance = GameObject.Find("GameInstance").GetComponent<GameInstance>();
@@ -17,7 +18,7 @@ public class Enemy : MonoBehaviour {
 	}
 	
 	void Update () {
-        currentState.execute();
+        //currentState.execute();
 	}
 
     public float getDecisionTime() {
@@ -33,12 +34,32 @@ public class Enemy : MonoBehaviour {
     }
 
     /**
+     * Rotates around the floor where the stances are, creating the illusion the enemy is dropping or rising
+     * */
+    private void verticalFlip() {
+        Vector3 rotateAround;
+
+        if (isUp)
+            rotateAround = new Vector3(transform.position.x, transform.position.y + 0.8f, transform.position.z);
+        else
+            rotateAround = new Vector3(transform.position.x, transform.position.y - 0.8f, transform.position.z);
+
+        transform.RotateAround(rotateAround, new Vector3(0, 0, 1), 180);
+    }
+
+    /**
      * Used by the BattleController.
      * Gives a more random approach to the initial condicions.
      * */
     public void setPositioningVariables(int currStance, bool isUp) {
         this.currStance = currStance;
         this.isUp = isUp;
+
+        //ERROR
+        //transform.position = new Vector3(gameInstance.stancePositions[this.currStance].x, transform.position.y, transform.position.z);
+
+        if(!this.isUp)
+            verticalFlip();
     }
 
     /**

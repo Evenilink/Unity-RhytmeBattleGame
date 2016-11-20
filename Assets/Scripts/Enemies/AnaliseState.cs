@@ -16,7 +16,7 @@ public class AnaliseState : IEnemyState {
 
         if (currTime >= enemy.getDecisionTime()) {
             int distanceToPlayer = Mathf.Abs(enemy.currStance - enemy.playerController.getCurrStance());
-            if (distanceToPlayer == 1) {
+            if (distanceToPlayer == 1 || distanceToPlayer == 0) {
                 enemy.changeState(new AttackState());
                 return;
             }
