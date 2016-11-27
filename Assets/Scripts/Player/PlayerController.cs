@@ -204,6 +204,7 @@ public class PlayerController : MonoBehaviour {
 
         if(health <= 0 || currStance < 0 || currStance >= gameInstance.stancePositions.Count) {
             Debug.Log("The player has died!");
+            Application.LoadLevel(0);
             Destroy(gameObject);
             return;
         }
@@ -216,6 +217,7 @@ public class PlayerController : MonoBehaviour {
 
         if(health <= 0) {
             Debug.Log("The player has died!");
+            Application.LoadLevel(0);
             Destroy(gameObject);
             return;
         }

@@ -1,21 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class AnaliseState : IEnemyState {
+public class ChaseState : IEnemyState {
 
     private Enemy enemy;
-    private float currTime;
-    private int randomness = 1;
+    private float decisionTime;
+    private float currTime = 0;
 
     public void enter(Enemy enemy) {
         this.enemy = enemy;
-        currTime = 0;
+        decisionTime = Random.Range(0.2f, 0.4f);
     }
 
     public void execute() {
         currTime += Time.deltaTime;
 
-        if (currTime >= enemy.getDecisionTime()) {
+        if (currTime >= decisionTime) {
             int distanceToPlayer = Mathf.Abs(enemy.getCurrStance() - enemy.playerController.getCurrStance());
 
             if (distanceToPlayer == 0) {
@@ -32,19 +32,28 @@ public class AnaliseState : IEnemyState {
                             enemy.changeState(new AttackState(1));
                         else
                             enemy.changeState(new AttackState(2));
-                    } else
+                    }
+                    else
                         enemy.verticalFlip();
-                } else {
+                }
+                else {
                     int decider = Random.Range(0, 2);
                     if (decider == 0)
                         enemy.verticalFlip();
                     else
                         moveCloserToPlayer(enemy.playerController);
                 }
-            } else
-                moveCloserToPlayer(enemy.playerController);
+            }
+            else {
+                if (Random.Range(0, 9) == 0)
+                    enemy.changeState(new WaitState());
+                else
+                    moveCloserToPlayer(enemy.playerController);
+            }
 
             currTime = 0;
+            decisionTime = Random.Range(0.2f, 0.4f);
+            myDebug();
         }
     }
 
@@ -63,5 +72,9 @@ public class AnaliseState : IEnemyState {
             enemy.currStance++;
 
         enemy.updateEnemyPosition();
+    }
+
+    private void myDebug() {
+        Debug.Log("ChaseState, " + decisionTime);
     }
 }

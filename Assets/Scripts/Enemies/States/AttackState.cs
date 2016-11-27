@@ -33,7 +33,12 @@ public class AttackState : IEnemyState {
             default: break;
         }
 
-        enemy.changeState(new AnaliseState());
+        int decider = UnityEngine.Random.Range(0, 2);
+        switch(decider) {
+            case 0: enemy.changeState(new ChaseState()); break;
+            case 1: enemy.changeState(new RunAwayState()); break;
+            default: break;
+        }
     }
 
     public void exit() {

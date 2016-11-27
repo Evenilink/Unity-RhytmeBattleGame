@@ -11,14 +11,13 @@ public class Enemy : MonoBehaviour {
     public int currStance;
 
     private IEnemyState currentState;
-    private float decisionTime = 1;
     private bool isUp = true;
     private int health = 2;
 
     void Start() {
         gameInstance = GameObject.Find("GameInstance").GetComponent<GameInstance>();
         playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-        changeState(new AnaliseState());
+        changeState(new ChaseState());
 
         currStance = 2;
         isUp = true;
@@ -27,10 +26,6 @@ public class Enemy : MonoBehaviour {
 
     void Update() {
         currentState.execute();
-    }
-
-    public float getDecisionTime() {
-        return decisionTime;
     }
 
     public int getCurrStance() {
@@ -72,6 +67,7 @@ public class Enemy : MonoBehaviour {
 
         currentState = state;
         currentState.enter(this);
+        Debug.Log(state);
     }
 
     /**
