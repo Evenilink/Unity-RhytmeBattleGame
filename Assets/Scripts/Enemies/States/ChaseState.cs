@@ -9,7 +9,7 @@ public class ChaseState : IEnemyState {
 
     public void enter(Enemy enemy) {
         this.enemy = enemy;
-        decisionTime = Random.Range(0.2f, 0.4f);
+        decisionTime = Random.Range(0.2f * enemy.getDifficulty(), 0.4f * enemy.getDifficulty());
     }
 
     public void execute() {
@@ -52,7 +52,7 @@ public class ChaseState : IEnemyState {
             }
 
             currTime = 0;
-            decisionTime = Random.Range(0.2f, 0.4f);
+            decisionTime = Random.Range(0.2f * enemy.getDifficulty(), 0.4f * enemy.getDifficulty());
             myDebug();
         }
     }

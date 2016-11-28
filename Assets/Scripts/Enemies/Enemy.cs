@@ -12,7 +12,8 @@ public class Enemy : MonoBehaviour {
 
     private IEnemyState currentState;
     private bool isUp = true;
-    private int health = 2;
+    private int health = 1;
+    private float difficulty = 3.0f;
 
     void Start() {
         gameInstance = GameObject.Find("GameInstance").GetComponent<GameInstance>();
@@ -34,6 +35,10 @@ public class Enemy : MonoBehaviour {
 
     public bool getIsUp() {
         return isUp;
+    }
+
+    public float getDifficulty() {
+        return difficulty;
     }
 
     /**
@@ -84,6 +89,7 @@ public class Enemy : MonoBehaviour {
 
         if (health <= 0 || currStance < 0 || currStance >= gameInstance.stancePositions.Count) {
             Debug.Log("The enemy has died!");
+            playerController.winner();
             Destroy(gameObject);
             return;
         }
@@ -99,6 +105,7 @@ public class Enemy : MonoBehaviour {
         health--;
         if (health <= 0) {
             Debug.Log("The enemy has died!");
+            playerController.winner();
             Destroy(gameObject);
             return;
         }

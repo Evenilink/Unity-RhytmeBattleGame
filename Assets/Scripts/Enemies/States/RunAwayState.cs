@@ -11,9 +11,6 @@ public class RunAwayState : IEnemyState {
     public void enter(Enemy enemy) {
         this.enemy = enemy;
 
-        /*var numRightStances = enemy.currStance - enemy.gameInstance.stancePositions.Count;
-        var numLeftStances = enemy.currStance + 1;*/
-
         if (UnityEngine.Random.Range(0, 1) == 0) {
             destinationStance = UnityEngine.Random.Range(enemy.currStance - 3, enemy.currStance);
             if (destinationStance < 0)
@@ -26,7 +23,7 @@ public class RunAwayState : IEnemyState {
                 destinationStance = enemy.gameInstance.stancePositions.Count - 1;
         }
 
-        decisionTime = UnityEngine.Random.Range(0.2f, 0.3f);
+        decisionTime = UnityEngine.Random.Range(0.2f * enemy.getDifficulty(), 0.3f * enemy.getDifficulty());
     }
 
     public void execute() {
@@ -43,7 +40,7 @@ public class RunAwayState : IEnemyState {
                     enemy.changeState(new WaitState());
             }
 
-            decisionTime = UnityEngine.Random.Range(0.2f, 0.3f);
+            decisionTime = UnityEngine.Random.Range(0.2f * enemy.getDifficulty(), 0.3f * enemy.getDifficulty());
             myDebug();
         }
     }

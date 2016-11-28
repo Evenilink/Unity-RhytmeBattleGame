@@ -22,10 +22,11 @@ public class PlayerController : MonoBehaviour {
     //BATTLE_STATE variables
     private GameInstance gameInstance;
     private Enemy enemy;
+    private GameObject currBattleStanceController;
     private int health = 1;
     private int currStance;
     private bool isUp;
-    private int startingStance = 3;
+    private int startingStance = 0;
     private bool startingIsUp = true;
 
     private Rigidbody2D rigidbody2D;
@@ -132,6 +133,7 @@ public class PlayerController : MonoBehaviour {
             currState = State.BATTLE_STATE;
             rigidbody2D.velocity = new Vector2(0, 0);
 
+            currBattleStanceController = other.transform.parent.gameObject;
             other.transform.parent.gameObject.GetComponent<BattleController>().generateBattleStances();
             enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy>();
 
@@ -221,5 +223,23 @@ public class PlayerController : MonoBehaviour {
             Destroy(gameObject);
             return;
         }
+    }
+
+    /**
+     * Called by the enemy when player wins
+     * */
+    public void winner() {
+        for (int i = 0; i < currBattleStanceController.transform.childCount; i++)
+            Destroy(currBattleStanceController.transform.GetChild(i).gameObject);
+        Destroy(currBattleStanceController);
+
+        gameInstance.addEnemyDefeated();
+        gameInstance.clearStancePositions();
+
+        if (!isUp)
+            verticalFlip();
+
+        rigidbody2D.gravityScale = 1;
+        currState = State.FREE_MOVEMENT_STATE;
     }
 }

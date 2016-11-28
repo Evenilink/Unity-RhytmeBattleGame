@@ -12,11 +12,11 @@ public class GameInstance : MonoBehaviour {
             Debug.Log("Stance position " + i + " = " + stancePositions[i]);
     }
 
-    /*public List<Vector2> getStancePositions() {
-        return stancePositions;
+    public void clearStancePositions() {
+        stancePositions.Clear();
     }
 
-    public int getEnemiesDefeated() {
-        return enemiesDefeated;
-    }*/
+    public void addEnemyDefeated() {
+        enemiesDefeated++;
+    }
 }

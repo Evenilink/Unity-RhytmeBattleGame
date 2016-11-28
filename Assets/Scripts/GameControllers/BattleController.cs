@@ -6,6 +6,7 @@ public class BattleController : MonoBehaviour {
 
     public GameObject enemy;
     public GameObject battleStance;
+    public GameObject wall;
     public int amountBattleStances = 4;
     public float stancesOffset = 2;
 
@@ -45,6 +46,9 @@ public class BattleController : MonoBehaviour {
         }
 
         stancePositions.Sort(sortByX);
+
+        Instantiate(wall, new Vector3(stancePositions[0].x - stancesOffset, stancePositions[0].y, transform.position.z), wall.transform.rotation);
+        Instantiate(wall, new Vector3(stancePositions[stancePositions.Count - 1].x + stancesOffset, stancePositions[stancePositions.Count - 1].y, transform.position.z), wall.transform.rotation);
 
         //Setting the GameInstance variables
         gameInstance.stancePositions = stancePositions;
