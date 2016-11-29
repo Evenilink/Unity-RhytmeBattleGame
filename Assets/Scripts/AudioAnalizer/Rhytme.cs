@@ -4,22 +4,21 @@ using System.Collections.Generic;
 
 public class Rhytme : MonoBehaviour {
 
-    private Transform playerTransform;
     public GameObject[] rhytmeObjects;
-    public int numObjX;
-    public int numObjY;
-    public float spaceBetweenX;
-    public float spaceBetweenY;
-
     public float multipliar;
+    public float radius = 5;
+    public float zDistance = 3;
+    public int numObjSameTime = 10;
 
-    private float[] spectrum;
-    private float c1, c2, c3, c4;
-
+    private Transform playerTransform;
     private List<GameObject> rhytmeObjC1;
     private List<GameObject> rhytmeObjC2;
     private List<GameObject> rhytmeObjC3;
     private List<GameObject> rhytmeObjC4;
+    private float[] spectrum;
+    private float c1, c2, c3, c4;
+    private float alfa = 0;
+    private float angToAdvance;
 
     // Use this for initialization
     void Start() {
@@ -31,36 +30,14 @@ public class Rhytme : MonoBehaviour {
         rhytmeObjC4 = new List<GameObject>();
 
         playerTransform = GameObject.FindWithTag("Player").transform;
+        float zDistanceAux = zDistance;
+        angToAdvance = 360 / numObjSameTime;
 
-        float positionX = 0 - numObjX;
-        float positionY = transform.position.y - numObjY;
-
-        /*for (int i = 0; i < numObjX; i++) {
-            for (int j = 0; j < numObjY; j++) {
-                GameObject rhytmeObj = Instantiate(rhytmeObjects[Random.Range(0, rhytmeObjects.Length)], new Vector3(positionX, positionY, 20), transform.rotation) as GameObject;
-                rhytmeObj.transform.parent = playerTransform;
-                switch (Random.Range(0, 4)) {
-                    case 0: rhytmeObjC1.Add(rhytmeObj); break;
-                    case 1: rhytmeObjC2.Add(rhytmeObj); break;
-                    case 2: rhytmeObjC3.Add(rhytmeObj); break;
-                    case 3: rhytmeObjC4.Add(rhytmeObj); break;
-                    default: break;
-                }
-                positionX += spaceBetweenX;
-            }
-
-            positionX = 0;
-            positionY += spaceBetweenY;
-        }*/
-
-        float alfa = 0;
-        float radius = 5;
-        float zDistance = 3;
-        for(int i = 0; i <= 10; i++) {
-            GameObject rhytmeObj = Instantiate(rhytmeObjects[0], new Vector3(Mathf.Cos(alfa) * radius, Mathf.Sin(alfa) * radius, 10 + zDistance), transform.rotation) as GameObject;
+        for (int i = 0; i <= numObjSameTime; i++) {
+            GameObject rhytmeObj = Instantiate(rhytmeObjects[0], new Vector3(Mathf.Cos(alfa) * radius, Mathf.Sin(alfa) * radius, 10 + zDistanceAux), transform.rotation) as GameObject;
             rhytmeObj.transform.parent = playerTransform;
-            alfa += 360 / 10;
-            zDistance += 3;
+            alfa += angToAdvance;
+            zDistanceAux += zDistance;
 
             switch (Random.Range(0, 4)) {
                 case 0: rhytmeObjC1.Add(rhytmeObj); break;
@@ -83,22 +60,18 @@ public class Rhytme : MonoBehaviour {
 
         for (int i = 0; i < rhytmeObjC1.Count; i++) {
             rhytmeObjC1[i].transform.localScale = new Vector3(c1 * multipliar, c1 * multipliar, c1 * multipliar);
-            //rhytmeObjC1[i].transform.localEulerAngles += new Vector3(0, Random.value * 20 * c1, Random.value * 20 * c1);
         }
 
         for (int i = 0; i < rhytmeObjC2.Count; i++) {
             rhytmeObjC2[i].transform.localScale = new Vector3(c2 * multipliar, c2 * multipliar, c2 * multipliar);
-            //rhytmeObjC2[i].transform.localEulerAngles += new Vector3(0, Random.value * 20 * c2, Random.value * 20 * c2);
         }
 
         for (int i = 0; i < rhytmeObjC3.Count; i++) {
             rhytmeObjC3[i].transform.localScale = new Vector3(c3 * multipliar, c3 * multipliar, c3 * multipliar);
-            //rhytmeObjC3[i].transform.localEulerAngles += new Vector3(0, Random.value * 20 * c3, Random.value * 20 * c3);
         }
 
         for (int i = 0; i < rhytmeObjC4.Count; i++) {
             rhytmeObjC4[i].transform.localScale = new Vector3(c4 * multipliar, c4 * multipliar, c4 * multipliar);
-            //rhytmeObjC4[i].transform.localEulerAngles += new Vector3(0, Random.value * 20 * c4, Random.value * 20 * c4);
         }
     }
 }

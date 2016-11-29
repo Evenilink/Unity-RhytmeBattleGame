@@ -10,8 +10,8 @@ public class RhytmeObject : MonoBehaviour {
 	}
 	
 	void Update () {
-        /*if (transform.position.z <= 3)
-            Destroy(gameObject);*/
+        if (transform.position.z <= -10)
+            Destroy(gameObject);
 
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - speed * Time.deltaTime);
 	}
