@@ -1,20 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 public class Rhytme : MonoBehaviour {
-
-    public GameObject[] rhytmeObjects;
+    public GameObject prefab_rhytmeObject;
     public float multipliar;
     public float radius = 5;
-    public float zDistance = 3;
+    public float distanceBetweenRhytmeObjs = 3;
     public int numObjSameTime = 10;
+    public float initialObjDistance = 5;
 
-    private Transform playerTransform;
-    private List<GameObject> rhytmeObjC1;
-    private List<GameObject> rhytmeObjC2;
-    private List<GameObject> rhytmeObjC3;
-    private List<GameObject> rhytmeObjC4;
+    private Transform camTransform;
     private float[] spectrum;
     private float c1, c2, c3, c4;
     private float alfa = 0;
@@ -24,28 +19,15 @@ public class Rhytme : MonoBehaviour {
     void Start() {
         Random.seed = (int)System.DateTime.Now.Ticks;
 
-        rhytmeObjC1 = new List<GameObject>();
-        rhytmeObjC2 = new List<GameObject>();
-        rhytmeObjC3 = new List<GameObject>();
-        rhytmeObjC4 = new List<GameObject>();
-
-        playerTransform = GameObject.FindWithTag("Player").transform;
-        float zDistanceAux = zDistance;
+        camTransform = GameObject.Find("Main Camera").transform;
+        float zDistanceAux = distanceBetweenRhytmeObjs;
         angToAdvance = 360 / numObjSameTime;
 
         for (int i = 0; i <= numObjSameTime; i++) {
-            GameObject rhytmeObj = Instantiate(rhytmeObjects[0], new Vector3(Mathf.Cos(alfa) * radius, Mathf.Sin(alfa) * radius, 10 + zDistanceAux), transform.rotation) as GameObject;
-            rhytmeObj.transform.parent = playerTransform;
+            GameObject rhytmeObj = Instantiate(prefab_rhytmeObject, new Vector3(Mathf.Cos(alfa) * radius, Mathf.Sin(alfa) * radius, initialObjDistance + zDistanceAux), transform.rotation) as GameObject;
+            rhytmeObj.transform.parent = camTransform;
             alfa += angToAdvance;
-            zDistanceAux += zDistance;
-
-            switch (Random.Range(0, 4)) {
-                case 0: rhytmeObjC1.Add(rhytmeObj); break;
-                case 1: rhytmeObjC2.Add(rhytmeObj); break;
-                case 2: rhytmeObjC3.Add(rhytmeObj); break;
-                case 3: rhytmeObjC4.Add(rhytmeObj); break;
-                default: break;
-            }
+            zDistanceAux += distanceBetweenRhytmeObjs;
         }
     }
 
@@ -53,25 +35,25 @@ public class Rhytme : MonoBehaviour {
     void Update() {
         spectrum = AudioListener.GetSpectrumData(1024, 0, FFTWindow.BlackmanHarris);
 
-        float c1 = spectrum[2] + spectrum[4] + spectrum[6] + spectrum[8] + spectrum[10];
-        float c2 = spectrum[12] + spectrum[14] + spectrum[16] + spectrum[18] + spectrum[20];
-        float c3 = spectrum[22] + spectrum[24] + spectrum[26] + spectrum[28] + spectrum[30];
-        float c4 = spectrum[32] + spectrum[34] + spectrum[36] + spectrum[38] + spectrum[40];
+        c1 = spectrum[2] + spectrum[4] + spectrum[6] + spectrum[8] + spectrum[10];
+        c2 = spectrum[12] + spectrum[14] + spectrum[16] + spectrum[18] + spectrum[20];
+        c3 = spectrum[22] + spectrum[24] + spectrum[26] + spectrum[28] + spectrum[30];
+        c4 = spectrum[32] + spectrum[34] + spectrum[36] + spectrum[38] + spectrum[40];
+    }
 
-        for (int i = 0; i < rhytmeObjC1.Count; i++) {
-            rhytmeObjC1[i].transform.localScale = new Vector3(c1 * multipliar, c1 * multipliar, c1 * multipliar);
-        }
+    public void createRhytmeObj() {
+        GameObject rhytmeObj = Instantiate(prefab_rhytmeObject, new Vector3(camTransform.position.x + Mathf.Cos(alfa) * radius, camTransform.position.y + Mathf.Sin(alfa) * radius, initialObjDistance + distanceBetweenRhytmeObjs), transform.rotation) as GameObject;
+        rhytmeObj.transform.parent = camTransform;
+        alfa += angToAdvance;
+    }
 
-        for (int i = 0; i < rhytmeObjC2.Count; i++) {
-            rhytmeObjC2[i].transform.localScale = new Vector3(c2 * multipliar, c2 * multipliar, c2 * multipliar);
-        }
-
-        for (int i = 0; i < rhytmeObjC3.Count; i++) {
-            rhytmeObjC3[i].transform.localScale = new Vector3(c3 * multipliar, c3 * multipliar, c3 * multipliar);
-        }
-
-        for (int i = 0; i < rhytmeObjC4.Count; i++) {
-            rhytmeObjC4[i].transform.localScale = new Vector3(c4 * multipliar, c4 * multipliar, c4 * multipliar);
+    public float getBeatValue(int type) {
+        switch (type) {
+            case 1: return c1 * multipliar; break;
+            case 2: return c2 * multipliar; break;
+            case 3: return c3 * multipliar; break;
+            case 4: return c4 * multipliar; break;
+            default: return c1 * multipliar; break;
         }
     }
 }
