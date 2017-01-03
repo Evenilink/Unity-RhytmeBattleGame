@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GameInstance : MonoBehaviour {
-
+    public int scorePlayer1 = 0;
+    public int scorePlayer2 = 0;
     public List<Vector2> stancePositions { get; set; }
     public int enemiesDefeated { get; set; }
 

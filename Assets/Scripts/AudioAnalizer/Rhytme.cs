@@ -10,6 +10,7 @@ public class Rhytme : MonoBehaviour {
     public float initialObjDistance = 5;
 
     private Transform camTransform;
+    private float yOffset;
     private float[] spectrum;
     private float c1, c2, c3, c4;
     private float alfa = 0;
@@ -20,11 +21,13 @@ public class Rhytme : MonoBehaviour {
         Random.seed = (int)System.DateTime.Now.Ticks;
 
         camTransform = GameObject.Find("Main Camera").transform;
+        yOffset = camTransform.GetComponent<CameraFollow>().yOffset;
         float zDistanceAux = distanceBetweenRhytmeObjs;
         angToAdvance = 360 / numObjSameTime;
 
+
         for (int i = 0; i <= numObjSameTime; i++) {
-            GameObject rhytmeObj = Instantiate(prefab_rhytmeObject, new Vector3(Mathf.Cos(alfa) * radius, Mathf.Sin(alfa) * radius, initialObjDistance + zDistanceAux), transform.rotation) as GameObject;
+            GameObject rhytmeObj = Instantiate(prefab_rhytmeObject, new Vector3(camTransform.position.x + Mathf.Cos(alfa) * radius, camTransform.position.y + yOffset + Mathf.Sin(alfa) * radius, initialObjDistance + zDistanceAux), transform.rotation) as GameObject;
             rhytmeObj.transform.parent = camTransform;
             alfa += angToAdvance;
             zDistanceAux += distanceBetweenRhytmeObjs;
@@ -42,7 +45,7 @@ public class Rhytme : MonoBehaviour {
     }
 
     public void createRhytmeObj() {
-        GameObject rhytmeObj = Instantiate(prefab_rhytmeObject, new Vector3(camTransform.position.x + Mathf.Cos(alfa) * radius, camTransform.position.y + Mathf.Sin(alfa) * radius, initialObjDistance + distanceBetweenRhytmeObjs), transform.rotation) as GameObject;
+        GameObject rhytmeObj = Instantiate(prefab_rhytmeObject, new Vector3(camTransform.position.x + Mathf.Cos(alfa) * radius, camTransform.position.y + yOffset + Mathf.Sin(alfa) * radius, initialObjDistance + distanceBetweenRhytmeObjs), transform.rotation) as GameObject;
         rhytmeObj.transform.parent = camTransform;
         alfa += angToAdvance;
     }

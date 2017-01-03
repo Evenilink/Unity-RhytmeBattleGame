@@ -4,6 +4,7 @@ using System.Collections;
 public class CameraFollow : MonoBehaviour {
 
     public float smoothTime = 0.5f;
+    public float yOffset = 0.05f;
 
     private GameObject player;
     private Vector3 position;
@@ -11,13 +12,13 @@ public class CameraFollow : MonoBehaviour {
 
     void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
-        position = new Vector3(player.transform.position.x, player.transform.position.y, -10);
+        position = new Vector3(player.transform.position.x, player.transform.position.y + yOffset, -10);
 	}
 	
 	void Update () {
         position.x = Mathf.SmoothDamp(transform.position.x, player.transform.position.x, ref velocity.x, smoothTime);
         position.y = Mathf.SmoothDamp(transform.position.y, player.transform.position.y, ref velocity.y, smoothTime);
 
-        transform.position = new Vector3(position.x, position.y, transform.position.z);
+        transform.position = new Vector3(position.x, position.y + yOffset, transform.position.z);
 	}
 }

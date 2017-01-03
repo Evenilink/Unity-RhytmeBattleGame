@@ -18,12 +18,14 @@ public class PlayerController : MonoBehaviour {
     private float axisMovement;
     private float groundRadius = 0.2f;
     private bool grounded;
+    private Vector2 touchOrigin = -Vector2.one;
 
     //BATTLE_STATE variables
     private GameInstance gameInstance;
+    private ScoreControllerUI uiController;
     private Enemy enemy;
     private GameObject currBattleStanceController;
-    private int health = 1;
+    private int health = 3;
     private int currStance;
     private bool isUp;
     private int startingStance = 0;
@@ -36,6 +38,7 @@ public class PlayerController : MonoBehaviour {
 
         rigidbody2D = GetComponent<Rigidbody2D>();
         gameInstance = GameObject.Find("GameInstance").GetComponent<GameInstance>();
+        uiController = GameObject.Find("CanvasScore").GetComponent<ScoreControllerUI>();
     }
 
     void Update() {
@@ -50,13 +53,30 @@ public class PlayerController : MonoBehaviour {
      * */
     void handleInput() {
         switch(currState) {
-
             case State.FREE_MOVEMENT_STATE:
+#if UNITY_STANDALONE || UNITY_WEBPLAYER
                 axisMovement = Input.GetAxis("Horizontal");
                 rigidbody2D.velocity = new Vector2(axisMovement * movementSpeed, rigidbody2D.velocity.y);
                 if (Input.GetButtonDown("Jump") && grounded)
                     rigidbody2D.AddForce(new Vector2(0, jumpForce));
                 break;
+#elif UNITY_ANDROID
+                if(Input.touchCount > 0) {
+                    Touch touch = Input.touches[0];
+
+                    if (touch.phase == TouchPhase.Began)
+                        touchOrigin = touch.position;
+                    else if(touch.phase == TouchPhase.Ended) {
+                        Vector2 touchEnd = touch.position;
+                        float x = touchEnd.x - touchOrigin.x;
+                        float y = touchEnd.y - touchOrigin.y;
+                        if(Mathf.Abs(x) > Mathf.Abs(y)) {
+                            rigidbody2D.velocity = new Vector2(5 * movementSpeed, rigidbody2D.velocity.y);
+                        }
+                    }
+                }
+                break;
+#endif
 
             case State.BATTLE_STATE:
                 if (Input.GetButtonDown("Transport Left")) {
@@ -203,8 +223,10 @@ public class PlayerController : MonoBehaviour {
             currStance++;
 
         health--;
+        //Change the 'health' sprite image
+        uiController.decreseHealth(1, health);
 
-        if(health <= 0 || currStance < 0 || currStance >= gameInstance.stancePositions.Count) {
+        if (health <= 0 || currStance < 0 || currStance >= gameInstance.stancePositions.Count) {
             Debug.Log("The player has died!");
             Application.LoadLevel(0);
             Destroy(gameObject);
@@ -216,8 +238,10 @@ public class PlayerController : MonoBehaviour {
 
     public void receivedVerticalAttack(bool fromBelow) {
         health--;
+        //Change the 'health' sprite image
+        uiController.decreseHealth(1, health);
 
-        if(health <= 0) {
+        if (health <= 0) {
             Debug.Log("The player has died!");
             Application.LoadLevel(0);
             Destroy(gameObject);
